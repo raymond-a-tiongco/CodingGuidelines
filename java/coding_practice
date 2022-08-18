@@ -1,0 +1,317 @@
+# 3-3 Coding Practice
+
+## All Projects
+
+### Coding Style
+> Please also read [Coding Styles](./coding_style) for formatting standard.
+
+<br>
+
+### Coding Rules
+> Please also read [Coding Rules](../coding_rules/java/coding-rules_forJava8.md) for Coding Rules.
+
+<br>
+
+### Dependency Minimization
+> Remove unnecessary dependency.
+> Too much dependency results in conflicts around .jar versions or regression, for it compels us to make an intricate .jar handling.
+> If you find your business logic being referred to by multiple other classes, you probably misunderstand the usages of util and business logic, because such a case basically never happens.
+> Util classes that are highly versatile are intended to be used by any packages, but only a minimum number of processes must be allowed to depend on business logics.
+> This is a principle related to [Place Them in Their Neighborhood].
+> Confirm you aren't making a class depend on a business logic instead of a util.
+> Confirm a class that you want your class to depend on doesn't have any nouns specific to business logic.
+
+<br>
+
+### Place Them in Their Neighborhood
+
+見通しの良い場所に処理を配置するのは可読性が高くなります. 逆に遠い場所に置くと、検索範囲が広がり、不安になり、影響調査に余計な時間がかかります.
+> It makes your implementation highly readable to place your pieces of code close together with those of high relevancy.
+> If you place it on a distant place, it consumes a lot of your time to investigate the influence of your code changes, 
+> because this will require wider area to search and make you anxious that you may make an oversight.
+
+以下に注意しましょう.
+> Beware of the following matters.
+
+* 同一プロジェクトでしか使わないクラスは、そのプロジェクトの中に.
+* 同一パッケージでしか使わないクラスは、そのパッケージの中へ.
+* 同一クラスでしか使わないクラスは、そのクラスの中へ.
+* 使われるかどうかも分からないのに、共通クラスを作ったりしない.外出しのパッケージ化しない.
+* [パッケージ Private](#パッケージ-private) も参照のこと
+　
+> * A class that is used only on one project must be placed in that project.
+> * A class that is used only on one package must be placed in that package.
+> * A class that is used only by one class must be placed in the latter class.
+> * Do not make a common class or an outer package which you are uncertain is used.
+> * Check the chapter [Package-Private](#パッケージ-private) too.
+
+<br>
+
+### パッケージ Private
+> ### Package-Private
+
+パッケージは特定の処理・目的を果たす単位で閉じているべきです. これを崩している時点でオブジェクト指向が既に破たんしているでしょう.
+> A package must be closed in the unit of purpose and responsibilities, otherwise you can say that the design fails in object-oriented design.
+
+パッケージの依存は親パッケージのみという構造が簡素であり、せいぜい親子パッケージのみの依存であるようにコントロールしましょう. これは[近い場所に定義](#近い場所に定義)にも通じます.
+> Dependency should be restricted at most to parent-child packages relations, such that a child package only may refer to its parent.
+> This also achieves [Place Them in Their Neighborhood](#近い場所に定義).
+
+以下に注意しましょう.
+> Beware of the following matters.
+
+* クラスの相互依存性と同様、パッケージで相互依存しているのは、オブジェクト指向からいっておかしい.
+* パッケージ同士の依存性は、同じプロジェクトの中でも避けるべき.
+* パッケージの依存性を回避するために、パッケージ名前空間の上流に、大きな意味をおき、子パッケージに向けて細分化していくような階層ツリーを使うべき。
+* パッケージの同一階層には、同一レベルのパッケージを置くべき.
+* プロジェクト内でパッケージ同士の依存が強くなると、そのパッケージのみを他のプロジェクトに移す事ができなくなる。
+
+> * Like in the case of classes, packages dependent to each other also fail in object-oriented design.
+> * Bidirectional dependencies between packages even in one project must be avoided too.
+> * To accomplish it, you're supposed to have a tree structure with a package of the broadest sense on top, where the more you go downstream, the finer senses your packages get.
+> * Packages from same stratum have same level of roles.
+> * If a project has packages with strong mutual dependency, it will be hopeless for a single package therein to migrate to another project.
+
+
+特に一番最後はよくある話で、プロジェクトが進んでそのパッケージが複数プロジェクトで参照される場合、外出しによって共通実装化する事ができなくなってしまいます. 
+結果、そのようなプロジェクトは、プロジェクトごとに重複コードが散在していき、可読性、メンテナンス性も下がり、最終的に生産性が下がっていきます.
+> The last case especially is often told. There you can't reimplement a package as a common module, although it's got being referred to by multiple projects as the business has got advanced.
+> Such projects will bear redundant codes and be suffering from the lack of readability, maintainability and finally productivity as a result. 
+
+<br>
+
+### 同じ処理を複数個所に書かない
+> ### No Duplicate Codes Allowed
+
+同じ処理コードが複数クラスに散らばっているのなら、それはオブジェクト指向ではありません. その処理は本来どのクラスにあるべきなのか？ という視点で、内部設計をし直しましょう.
+> Object-oriented design does not allow same codes to exist in multiple classes. Revise the internal design to reconsider what class your process should belong to.
+
+<br>
+
+### 使わないコードは削除
+> ### Remove Unnecessary Codes
+
+改修を行った人以外、過去の事情など知りません. 
+次に改修にあたった人が、既に使われていないコードに出会った場合、はじめはその残っているコードやカラムには意味があると思ってしまいます. 
+その結果、『意味のないコードの影響調査、混乱、実装者への確認』 といった 3重のコストをかけてしまいます.
+> No one but a person who has modified it knows the detail of the revision.
+> With unnecessary codes left, the next modifier will have to pay triple costs of investigating their uses, getting perplexed for not finding them and checking who made the needless work, 
+> because he or she will take the inevitability of any existing sources as granted.
+
+以下の注意をしましょう.
+> Beware of the following matters.
+
+* 改修時に、新旧のコード/スキーマが混在するケースでは、リリース後に古いコードを消しましょう.
+* 本番環境でのテストコード、確認コードも同様に、役割が終わったらちゃんと削除しましょう.
+
+> * When you face a situation of revising a source with both old and new codes or schemas placed together, delete the old ones after release.
+> * Codes just for testing or confirming your implementation on product environment must be deleted as they've got to be unnecessary as well.
+
+<br>
+
+### YAGNI
+
+[YAGNI](https://en.wikipedia.org/wiki/You_aren't_gonna_need_it)を考慮しましょう.
+> Observe [YAGNI](https://en.wikipedia.org/wiki/You_aren't_gonna_need_it)
+
+<br>
+
+### 対称的に書く
+> ### Implement Symmetrically
+
+対称的なコードは、バグを減らし、可読性を高め、検索性を上げ、他の実装者の勉強コストを下げます. つまり生産性が高いのです. 
+似たような書き方をしていると自然に、『該当箇所は、XXXプロジェクトと同じような処理なので、そこを参照してマネて書けば良いはずだ』という連想が働き、手早くサンプルを入手できます.
+結果、タスク完了も早いです.
+> Symmetric codes reduce bugs, reduce costs of study, raise readability and make themselves easier to search, in other words, are productive.
+> Codes conforming to a specific school help a programmer gain insight of "my new implementation should be in accordance with that process because they are broadly alike." and find a sample easily.
+
+以下に注意しましょう.
+> Beware of the following matters.
+
+* プロジェクトを跨いで、規則のあるパッケージ構成で統一する.
+* プロジェクトを跨いで、同じライブラリを使う.
+* プロジェクトを跨いで、同じクラスの命名規則を使用する.
+* プロジェクトを跨いで、クラス内のフィールドやメソッドの並び、その名称を統一する.
+* プロジェクトを跨いで、ビジネスロジックの書き方を・内容・作法を真似る. (決してビジネスロジックを2個書くという意味ではない.)
+* プロジェクトを跨いで、基本的なutil、アルゴリズムを使いまわす.
+* パッケージの依存関係が新たに増える場合、対称性を崩している可能性がある。そのやり方はホントに正しいか？事前にもう一度確認を.
+* パッケージ構造もプログラミングの範疇と考える. パッケージ階層には似たようなパッケージを並べると自然に対称性が上がる. ( [パッケージ階層の意味を揃える](#パッケージ階層の意味を揃える))
+
+> * All projects involved must apply one coherent package structure design.
+> * All projects involved must use same libraries.
+> * All projects involved must apply one policy of naming classes.
+> * Arrangement and names of fields and methods in a class must be unified through projects.
+> * Business logics must conform to a same coding school through projects. (It doesn't mean duplicate codes are allowed.)
+> * Code for basic utils and algorithms must be shared among projects.
+> * Beware of a case where new dependency between packages is added, because it may have defiled the symmetry.
+> * Consider designing package structure as a part of programming as well. Each stratum with same kind of packages grants more symmetry. ( [Unify Meanings of Package Levels](#パッケージ階層の意味を揃える) )
+
+<br>
+
+### パッケージ階層の意味を揃える
+> ### Unify Meanings of Package Levels
+
+『jp.admatrix.tpas.service』『jp.admatrix.tpas.sync』この様な階層を目にしたら違和感を感じてください. service の中に sync があるはずです.
+> Find it strange, if you see packages like "jp.admatrix.tpas.service" and "jp.admatrix.tpas.sync" at the same time.
+> (sync must be under service.)
+
+パッケージの階層の意味が統一されてくれば、[パッケージ Private](#パッケージ-private)や[対称的に書く](#対称的に書く)を達成しやすくなります. 結果、見通しはよくなり、可読性も上がります.
+> Coherent meanings of package hierarchy help us attain [Package-Private](#パッケージ-private) and [Implement Symmetrically](#対称的に書く) easier, and result in readable codes friendly to investigation as a result.
+
+* パッケージ構成もプログラミングだと思う事を習慣にすべきです. パッケージも綺麗にと思う事が第一歩です.
+* どうしても階層を揃えられない場合は存在します. その場合は原則を破っていいのですが、その原則の破り方をプロジェクトを跨いで統一しましょう([Implement Symmetrically](#対称的に書く)).
+> * Make a habit of regarding a package structure as a program. It is also a step for an engineer to realize beautiful hierarchy.
+> * There actually exist some cases of a stratum to that coherent rules are difficult to be applied.
+> We must introduce regulations about the way to defile the principle applied to all projects then.
+
+<br>
+
+### 勝手に新規プロジェクトを作らない
+> ### Never Start New Project with Your Own Decision.
+
+あまり手が入らないプロジェクトは、管理されなくなり、version がついていかず、バグの温床になるでしょう.
+> A project rarely maintained would get unmanaged, miss updates and get infested by bugs. 
+
+以下に注意をしましょう.
+> Beware of the following matters.
+
+* 特定の処理のためだけの共通実装やビジネスロジックを新規プロジェクトにしてはいけません. プロジェクトにはもっと大きな役割があるはずです.
+* どうしても必要な場合は、プロマネに相談.
+> * Do not create a new project only for a common implementation or a business logic of a specific process.
+> A project is a concept for a greater role than that.
+> * If you find initiation of a new project inevitable, consult with your project manager about it.
+
+<br>
+
+### サービスをまたぐDBアクセスの直参照禁止
+> ### Do Not Directly Call DB Access Involving Multiple Services.
+
+サービスの依存関係の解消に RDBMS を使用している場合、メンテナンスできなくなる可能性が高いです. 
+マイクロサービスの考え方に従い、このような時は api 経由で、データを CRUD すべきです.
+> Be sure let services access DB tables via their CRUD interfaces in the apis, in accordance with the idea of microservices, otherwise the system maintenance should get out of control, especially where RDBMS solved dependencies between them.
+
+<br>
+
+### オブジェクト設計の尊守
+> ### Conform to Object-Oriented Design
+オブジェクトの実態を無視したメソッド/フィールドはスパゲティコードの始まりです. 調査に時間がかかり、バグの温床になり、改修対象になり、3重のコストがかかるでしょう.
+> Methods and fields defying the concept of an object result in a spaghetti code, with which engineers will take an additional triple cost of onerous investigation, bug infestation and due repairs.
+
+以下の注意をしましょう.
+> Beware of the following matters.
+
+* 処理中心設計になっていないか？処理が通ればよしになっていないか？
+* メソッド・フィールドの名称と実体の間に整合性はあるか？2つ以上の意味を含んでいないか？
+* 改修によりオブジェクトの意味が変わるケースもある。その場合は思いきって、クラスやパッケージを見直す事.
+* 既存のコードに手を入れる事を恐れているのではないか？ -> 結局、他の人がより大きなリスクを背負うだけです。今あなたが直してください。
+
+> * Isn't your program focused just on processes? You must also care for the object structures.
+> * Do the names of your methods/fields coherent with their uses?
+> Prevent each of them having more than one meaning.
+> * Sometimes, modification alters the meanings of objects. In such case, reconsider the name (and/or structure) of related classes and packages.
+> * Are you anxious about fixing the existing code? It is you who is to do it, otherwise another person will incur a greater risk for it.
+
+<br>　
+
+### 無秩序でも動くコードの廃止
+> ### Abolish Codes that Work but Lack Order
+とりあえず動けばＯＫではありません. 該当箇所の類似コードと整合性はありますか？ 次に同じ該当箇所を改修する人は、他の大半の秩序あるコードを元にモジュールを作成しリリースを行います. 
+あなたの書いた限定的なコードで論理エラーがあった場合にそれには気づかないでしょう.  論理エラーの発見には、数年係るものもあります.
+> A code functioning for the time being does not mean OK. 
+> Make sure it's coherent to other codes of similar processes, because otherwise any of your possible errors will stay unnoticed for a long time (at worst for several years),
+for the other engineers who will make similar works after you will only observe the typical codes and ignore your irregular implementation.
+ 
+
+例えばこんな話もあるでしょう. とりあえず動いているコードには秩序がないため、そのコードとの連携モジュールを作成する他の人は、if文や case 文などで、特別対応コードを記述する必要性が生じてきます. 
+そして、それは他の人の手によってドンドン連鎖し、広がってしまいます.
+> Another possible problem is, an engineer who will take on a module that is supposed to refer to your odd code may also furnish his or hers with irregular codes of "if" or "case" clauses to offset your original irregularity.
+> Such collateral disorder will also spread by the hands of others expanding the solution.
+
+以下の事を心がけましょう.
+> Beware of the following matters.
+
+* 動く事は前提であって、動いた上で秩序あるコードに腐心してください。
+* コードを改修する際に、該当箇所をいきなり書き始めるのではなく、その周辺コードの調査をしっかり行った上で着手しましょう。
+* とるべき対策は[対称的に書く](#対称的に書く)と基本的に同じですが、心構えとして注意しましょう.
+* 少々のリリース遅延で、品質の高いコードが得られるなら、断固、品質を選びます.
+* もし無秩序なコードがあるのであれば、リスクをとってそこも直してしまいましょう.
+
+> * Not to mention you must suffice the requirement, your code must be orderly too.
+> * Before you modify a code, investigate its surroundings to make it consistent to other codes.
+> * The points you should care for are basically the same to those in [Implement Symmetrically](#対称的に書く), but also keep this paragraph in mind.
+> * A good code released a bit late is firmly better than a bad code with early release.
+> * Disordered codes must be modified even with some risks.
+
+<br>
+
+### 名前と実体の一致
+> ### Correspondence of Name to Substance
+
+既存の処理を理解を促すために、可読性 の高いコードは必須です. 中でも名前はその重要な手掛かりです.
+> To help understand existing processes, highly readable codes are required.
+> Names are an important element for it.
+
+以下に注意をしましょう.
+> Beware of the following matters.
+> * Confirm that members, fields and other stuffs with different meanings have different names.
+> * Does your method have a name reflecting the exact role of it?
+> * A business logic mustn't have any magic word in it, (ex. /tmp/normal/old/classic)
+> although util classes are recommended to have magic words conversely.
+> * Does your method/field have an English name natural to non-Japanese?
+> Learn English language too.
+> * When a system revision alters the meanings of implementation, take risks to change the names of classes and packages to make them fit.
+
+<br>
+
+### About Secure Coding
+> In security measures, it is important to avoid vulnerable code. 
+> 276 It is possible that the software will be released with vulnerabilities still present
+> and the service may be stopped due to attacks, so be aware of this when coding.     
+
+Take note of the following.  
+
+https://www.jpcert.or.jp/java-rules/
+
+
+### Release Effect
+> It is insufficient just to care for regression of normal cases. 
+> You need to consider any possibility of your release to conceive a new potential problem.
+
+<br>
+
+### Get Parameters from BidTag
+> A bidTag must keep a url as short as possible, because a browser can handle the attribute with length only less than 2000.
+> Any tag with url exceeding this amount won't work, in other words, the situation will be the same to "charge lost".
+> You will encounter the issue when a url contains many Get parameters.
+
+<br>
+
+### Preliminary Processes
+
+#### Synchronous and Asynchronous Thread
+> * There exist synchronous thread processes represented by BidLogic and asynchronous ones represented by AdgroupDataContext.
+> * Any process in a synchronous thread that can be handled in advance must be relocated to an asynchronous one.
+
+#### Synchronous threads must avoid containing a process to decide what process is to be executed
+> * To realize this, it is recommended to apply the strategy pattern of enum to avoid switch clauses with enum.
+> * Or, use the strategy pattern of classes.
+> * It is desirable that each enum or class executes its polymorphic process if called. 
+> The solution of using "if" or "switch-case" clauses to distinguish the process by its corresponding id is deprecated.
+> * By the way, object-oriented design addicts(experts) say, "if" clause is even unnecessary for an extremely fundamentalist way.
+> Codes containing many "if" clauses should be regarded as a product of defective designs in any way.
+
+<br>
+
+### Pathway of Charge
+> Beware of the linkage from tapi to dmp_api. Errors happening here may cause losses of tens of million dollars if overlooked, 
+> which are for the business sufficient to go under and the company may also lose its standing and the stock price.
+> Abnormal errors must definitely be recorded.
+　
+<br>
+
+### Data Loading to Be Reduced as Possible
+> * Currently, "SELECT" queries have already been placing enormous stress on RDBMS. 
+> Designs with minimum amount of "SELECT" clauses are required.
+> * An api is supposed to obtain DB data via an api having requested data stored as cached.
+
+
